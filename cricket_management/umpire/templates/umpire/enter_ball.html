@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ball by Ball Scoring</title>
+</head>
+<body>
+    <h2>Live Scoring</h2>
+
+    <p>Match ID: {{ match_id }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Runs:</label>
+        <select name="runs">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="6">6</option>
+        </select>
+        <br><br>
+
+        <label>Extra:</label>
+        <select name="extra">
+            <option value="">None</option>
+            <option value="wide">Wide</option>
+            <option value="no_ball">No Ball</option>
+            <option value="bye">Bye</option>
+            <option value="leg_bye">Leg Bye</option>
+        </select>
+        <br><br>
+
+        <label>Wicket?</label>
+        <input type="checkbox" name="is_wicket">
+        <br><br>
+
+        <button type="submit">Submit Ball</button>
+    </form>
+
+    <br>
+    <a href="{% url 'umpire_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>

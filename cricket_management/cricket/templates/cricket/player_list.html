@@ -1,0 +1,6 @@
+<h2>Players</h2>
+<ul>
+{% for player in players %}
+    <li>{{ player.user.username }} - {{ player.team }}</li>
+{% endfor %}
+</ul>

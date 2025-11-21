@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create / Select Match</title>
+</head>
+<body>
+    <h2>Create a New Match</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Team 1:</label>
+        <select name="team1" required>
+            <option value="">-- Select Team --</option>
+            {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label>Team 2:</label>
+        <select name="team2" required>
+            <option value="">-- Select Team --</option>
+            {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <button type="submit">Create Match</button>
+    </form>
+
+    <hr>
+
+    <h2>Existing Matches</h2>
+
+    <ul>
+        {% for match in matches %}
+            <li>
+                {{ match.team1.name }} vs {{ match.team2.name }}
+                <a href="{% url 'enter_ball' match.id %}">Start Scoring</a>
+            </li>
+        {% empty %}
+            <li>No matches available</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'umpire_dashboard' %}">Back</a>
+</body>
+</html>
