@@ -8,3 +8,4 @@ def dashboard(request):
         return HttpResponseForbidden("Not allowed")
 
     return render(request, 'player/dashboard.html')
+

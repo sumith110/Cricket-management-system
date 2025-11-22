@@ -1,52 +1,205 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create / Select Match</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .bg-cricket {
+            background-image: linear-gradient(rgba(17, 24, 39, 0.92), rgba(17, 24, 39, 0.85)), url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        /* Custom Scrollbar for the list */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1); 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3); 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5); 
+        }
+    </style>
 </head>
-<body>
-    <h2>Create a New Match</h2>
+<body class="bg-cricket text-gray-100 min-h-screen flex flex-col">
 
-    <form method="post">
-        {% csrf_token %}
+    <!-- Navbar -->
+    <nav class="bg-gray-900/50 backdrop-blur-sm border-b border-white/10 sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-1.5 rounded-lg shadow-lg">
+                    <i class="fas fa-baseball-bat-ball"></i>
+                </div>
+                <span class="font-bold text-lg tracking-wide text-white">Match Manager</span>
+            </div>
+            <a href="{% url 'umpire_dashboard' %}" class="text-gray-300 hover:text-white text-sm font-medium transition-colors flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </nav>
 
-        <label>Team 1:</label>
-        <select name="team1" required>
-            <option value="">-- Select Team --</option>
-            {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }}</option>
-            {% endfor %}
-        </select>
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8 flex flex-col justify-center">
+        
+        <!-- Layout Container: Grid layout for side-by-side on large screens, items centered vertically -->
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+            
+            <!-- Section 1: Create New Match (Left Side - Centered) -->
+            <div class="bg-white text-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-200/50 w-full">
+                <div class="bg-blue-600 p-5 border-b border-blue-700">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-plus-circle"></i> Create a New Match
+                    </h2>
+                </div>
+                
+                <div class="p-6 md:p-8">
+                    <form method="post" class="space-y-6">
+                        {% csrf_token %}
 
-        <br><br>
+                        <!-- Teams Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+                            
+                            <!-- Team 1 Selection -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">
+                                    Home Team
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-shield-alt text-blue-500"></i>
+                                    </div>
+                                    <select name="team1" required class="block w-full pl-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-3 appearance-none cursor-pointer hover:bg-white transition-colors">
+                                        <option value="">-- Select Team 1 --</option>
+                                        {% for team in teams %}
+                                            <option value="{{ team.id }}">{{ team.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
 
-        <label>Team 2:</label>
-        <select name="team2" required>
-            <option value="">-- Select Team --</option>
-            {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }}</option>
-            {% endfor %}
-        </select>
+                            <!-- VS Badge (Desktop) -->
+                            <div class="hidden md:flex absolute left-1/2 top-8 -ml-4 justify-center items-center w-8 h-8 bg-gray-200 rounded-full border-2 border-white z-10 text-xs font-bold text-gray-500">
+                                VS
+                            </div>
 
-        <br><br>
+                            <!-- Team 2 Selection -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">
+                                    Away Team
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-shield-alt text-red-500"></i>
+                                    </div>
+                                    <select name="team2" required class="block w-full pl-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-3 appearance-none cursor-pointer hover:bg-white transition-colors">
+                                        <option value="">-- Select Team 2 --</option>
+                                        {% for team in teams %}
+                                            <option value="{{ team.id }}">{{ team.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-        <button type="submit">Create Match</button>
-    </form>
+                        <!-- Overs Input -->
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">
+                                <i class="fas fa-stopwatch text-gray-600 mr-1"></i> Match Duration (Overs)
+                            </label>
+                            <input type="number" name="overs" min="1" required placeholder="e.g. 20" class="block w-full bg-white border border-gray-300 text-gray-900 text-lg font-semibold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 placeholder-gray-400">
+                            <p class="mt-1 text-xs text-gray-500">Enter the total number of overs for each innings.</p>
+                        </div>
 
-    <hr>
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3.5 px-6 rounded-lg shadow-md transform transition hover:-translate-y-0.5 duration-200 flex items-center justify-center gap-2">
+                            <i class="fas fa-check-circle"></i> Create Match
+                        </button>
+                    </form>
+                </div>
+            </div>
 
-    <h2>Existing Matches</h2>
+            <!-- Section 2: Existing Matches (Right Side - Centered) -->
+            <div class="flex flex-col h-full max-h-[650px] w-full">
+                <div class="bg-white/10 backdrop-blur-md rounded-xl shadow-xl border border-white/20 overflow-hidden flex flex-col h-full">
+                    <div class="bg-black/20 p-5 border-b border-white/10">
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fas fa-list-ul"></i> Existing Matches
+                        </h2>
+                    </div>
+                    
+                    <div class="p-4 overflow-y-auto custom-scrollbar flex-grow">
+                        <div class="space-y-3">
+                            {% for match in matches %}
+                                <!-- Match Card -->
+                                <div class="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200 group border-l-4 border-green-500 relative">
+                                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                                        
+                                        <!-- Match Details -->
+                                        <div class="flex-grow text-center sm:text-left w-full">
+                                            <div class="flex items-center justify-center sm:justify-start gap-2 text-gray-800 font-bold text-lg mb-1">
+                                                <span class="truncate">{{ match.team1.name }}</span>
+                                                <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">VS</span>
+                                                <span class="truncate">{{ match.team2.name }}</span>
+                                            </div>
+                                            
+                                            <!-- Meta Info -->
+                                            <div class="flex items-center justify-center sm:justify-start gap-4 text-sm text-gray-500">
+                                                <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100 font-medium text-xs">
+                                                    <i class="fas fa-circle-notch mr-1 text-[10px]"></i>{{ match.overs }} Overs
+                                                </span>
+                                                <span class="text-xs">ID: #{{ match.id }}</span>
+                                            </div>
+                                        </div>
 
-    <ul>
-        {% for match in matches %}
-            <li>
-                {{ match.team1.name }} vs {{ match.team2.name }}
-                <a href="{% url 'enter_ball' match.id %}">Start Scoring</a>
-            </li>
-        {% empty %}
-            <li>No matches available</li>
-        {% endfor %}
-    </ul>
+                                        <!-- Action Button -->
+                                        <a href="{% url 'enter_ball' match.id %}" class="w-full sm:w-auto bg-green-600 text-white hover:bg-green-700 font-semibold py-2 px-5 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 text-sm shadow-sm whitespace-nowrap">
+                                            <i class="fas fa-play"></i> Start Scoring
+                                        </a>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <!-- Empty State -->
+                                <div class="text-center py-12 px-4 bg-white/5 rounded-lg border border-white/10 border-dashed">
+                                    <div class="text-gray-400 text-5xl mb-4 opacity-50">
+                                        <i class="fas fa-cricket-bat-ball"></i>
+                                    </div>
+                                    <h3 class="text-lg font-medium text-gray-300">No matches found</h3>
+                                    <p class="text-gray-500 text-sm mt-1">Create a match on the left to start.</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <a href="{% url 'umpire_dashboard' %}">Back</a>
+        </div>
+    </main>
+    
+    <!-- Mobile Floating Back Button -->
+    <div class="lg:hidden fixed bottom-6 right-6 z-50">
+        <a href="{% url 'umpire_dashboard' %}" class="bg-gray-800 text-white h-12 w-12 rounded-full shadow-lg flex items-center justify-center border border-gray-700 hover:bg-gray-700 active:scale-95 transition-all">
+            <i class="fas fa-home"></i>
+        </a>
+    </div>
+
 </body>
 </html>

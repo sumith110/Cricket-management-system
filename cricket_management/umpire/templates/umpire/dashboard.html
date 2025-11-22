@@ -1,14 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Umpire Dashboard</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Background Image with Overlay */
+        .bg-cricket {
+            background-image: linear-gradient(rgba(30, 58, 138, 0.9), rgba(30, 58, 138, 0.8)), url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+    </style>
 </head>
-<body>
-    <h2>Welcome, {{ request.user.username }}</h2>
+<body class="bg-cricket text-white min-h-screen flex flex-col">
 
-    <ul>
-        <li><a href="{% url 'start_match' %}">Start a Match</a></li>
-        <li><a href="/logout/">Logout</a></li>
-    </ul>
+    <!-- Navbar -->
+    <nav class="bg-black/20 backdrop-blur-sm border-b border-white/10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <!-- Logo / Brand -->
+            <div class="flex items-center gap-3">
+                <div class="bg-white text-blue-900 p-2 rounded-full shadow-lg">
+                    <i class="fas fa-gavel text-xl"></i>
+                </div>
+                <span class="font-bold text-2xl tracking-wide text-white shadow-sm">UmpireZone</span>
+            </div>
+
+            <!-- User & Logout -->
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col text-right">
+                    <span class="text-xs text-blue-200 uppercase font-semibold">Logged in as</span>
+                    <span class="font-semibold leading-tight text-white">{{ request.user.username }}</span>
+                </div>
+                <div class="h-10 w-10 bg-blue-600 border-2 border-blue-400 rounded-full flex items-center justify-center text-base font-bold shadow-md">
+                    {{ request.user.username|slice:":1"|upper }}
+                </div>
+                <a href="/logout/" class="ml-2 text-blue-200 hover:text-white transition duration-200" title="Logout">
+                    <i class="fas fa-sign-out-alt text-2xl"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8 flex flex-col justify-center">
+        
+        <!-- Mobile Welcome Message -->
+        <div class="md:hidden mb-6 bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 text-center">
+            <p class="text-blue-200 text-sm">Welcome back,</p>
+            <h2 class="text-2xl font-bold text-white">{{ request.user.username }}</h2>
+        </div>
+
+        <!-- Dashboard Header -->
+        <div class="mb-10 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-white drop-shadow-md">Match Control</h1>
+            <p class="text-blue-200 mt-2 text-lg">Select an action to begin</p>
+        </div>
+
+        <!-- Action Grid - Expanded to fill space -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
+            
+            <!-- Start Match Card (Big Action) -->
+            <a href="{% url 'start_match' %}" class="group flex flex-col bg-white text-gray-800 rounded-2xl shadow-2xl hover:shadow-green-500/50 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border-2 border-transparent hover:border-green-500 min-h-[300px]">
+                <div class="flex-grow p-8 flex flex-col items-center justify-center text-center bg-gradient-to-b from-white to-gray-50">
+                    <div class="p-6 bg-green-100 text-green-600 rounded-full mb-6 group-hover:scale-110 transition-transform duration-300 shadow-inner">
+                        <i class="fas fa-play text-4xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2">Start Match</h3>
+                    <p class="text-gray-500 text-lg">Initialize teams and begin scoring</p>
+                </div>
+                <div class="bg-green-600 px-6 py-4 flex justify-center items-center gap-3 text-white font-bold tracking-wider uppercase text-sm group-hover:bg-green-700 transition-colors">
+                    Start Now <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <!-- Logout Card (Big Action) -->
+            <a href="/logout/" class="group flex flex-col bg-white/10 backdrop-blur-md text-white rounded-2xl shadow-2xl hover:shadow-red-500/50 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border border-white/20 hover:border-red-500 min-h-[300px]">
+                <div class="flex-grow p-8 flex flex-col items-center justify-center text-center">
+                    <div class="p-6 bg-white/10 text-red-400 rounded-full mb-6 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-power-off text-4xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold mb-2">Logout</h3>
+                    <p class="text-blue-200 text-lg">End current session</p>
+                </div>
+                <div class="bg-red-600/80 px-6 py-4 flex justify-center items-center gap-3 text-white font-bold tracking-wider uppercase text-sm group-hover:bg-red-600 transition-colors">
+                    Sign Out <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-blue-300 text-sm bg-black/20 backdrop-blur-sm">
+        &copy; <script>document.write(new Date().getFullYear())</script> Umpire Dashboard System.
+    </footer>
+
 </body>
 </html>

@@ -19,6 +19,7 @@ class Player(models.Model):
 class Match(models.Model):
     team1 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='team1')
     team2 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='team2')
+    overs = models.IntegerField(default=20)
     is_active = models.BooleanField(default=False)
 
 

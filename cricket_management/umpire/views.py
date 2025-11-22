@@ -22,6 +22,39 @@ def umpire_dashboard(request):
     return render(request, 'umpire/dashboard.html')
 
 
+from cricket.models import Match, Ball
+
+@login_required(login_url='umpire_login')
+def enter_ball(request, match_id):
+    if request.user.role != 'umpire':
+        return HttpResponseForbidden("Access denied")
+
+    match = Match.objects.get(id=match_id)
+
+    # Count balls already bowled for this match
+    balls = Ball.objects.filter(match=match).order_by('id')
+    total_balls = balls.count()
+
+    # Calculate next over & ball number
+    next_over = total_balls // 6 + 1
+    next_ball = total_balls % 6 + 1
+
+    # Prevent scoring beyond allowed overs
+    if next_over > match.overs:
+        return HttpResponseForbidden("Match completed — all overs finished")
+
+    return render(request, 'umpire/enter_ball.html', {
+        'match': match,
+        'match_id': match_id,
+        'next_over': next_over,
+        'next_ball': next_ball,
+        'total_balls': total_balls,
+    })
+
+
+
+
+    
 @login_required(login_url='umpire_login')
 def start_match(request):
     if request.user.role != 'umpire':
@@ -30,11 +63,13 @@ def start_match(request):
     if request.method == 'POST':
         team1_id = request.POST.get('team1')
         team2_id = request.POST.get('team2')
+        overs = request.POST.get('overs')  # <-- added
 
-        if team1_id and team2_id and team1_id != team2_id:
+        if team1_id and team2_id and team1_id != team2_id and overs:
             Match.objects.create(
                 team1_id=team1_id,
-                team2_id=team2_id
+                team2_id=team2_id,
+                overs=overs
             )
             return redirect('start_match')
 
@@ -45,11 +80,3 @@ def start_match(request):
         'teams': teams,
         'matches': matches
     })
-
-
-@login_required(login_url='umpire_login')
-def enter_ball(request, match_id):
-    if request.user.role != 'umpire':
-        return HttpResponseForbidden("Access denied")
-
-    return render(request, 'umpire/enter_ball.html', {'match_id': match_id})

@@ -1,45 +1,199 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ball by Ball Scoring</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .bg-cricket {
+            background-image: linear-gradient(rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.9)), url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Custom Checkbox Styling for Wicket */
+        .wicket-checkbox:checked + div {
+            background-color: #ef4444; /* Red-500 */
+            color: white;
+            border-color: #ef4444;
+        }
+        .wicket-checkbox:checked + div .wicket-icon {
+            color: white;
+        }
+    </style>
 </head>
-<body>
-    <h2>Live Scoring</h2>
+<body class="bg-cricket text-gray-100 min-h-screen flex flex-col">
 
-    <p>Match ID: {{ match_id }}</p>
+    <!-- Navbar -->
+    <nav class="bg-gray-900/50 backdrop-blur-sm border-b border-white/10 sticky top-0 z-20">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-red-600 text-white px-2 py-0.5 rounded text-xs font-bold animate-pulse">
+                    LIVE
+                </div>
+                <span class="font-bold text-lg tracking-wide text-white">Scoring Console</span>
+            </div>
+            <a href="{% url 'umpire_dashboard' %}" class="text-gray-400 hover:text-white text-sm font-medium transition-colors">
+                <i class="fas fa-times-circle text-lg"></i>
+            </a>
+        </div>
+    </nav>
 
-    <form method="post">
-        {% csrf_token %}
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-6 max-w-xl">
+        
+        <!-- Match Status Card -->
+        <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-xl overflow-hidden border border-white/10 mb-6">
+            <!-- Teams Header -->
+            <div class="p-6 text-center border-b border-gray-700 relative">
+                <div class="flex justify-between items-center gap-4">
+                    <div class="w-1/2 text-right">
+                        <h2 class="text-xl md:text-2xl font-bold text-white leading-tight truncate">{{ match.team1.name }}</h2>
+                        <p class="text-xs text-blue-400 font-semibold uppercase tracking-wider">Home</p>
+                    </div>
+                    
+                    <div class="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-gray-700 text-gray-400 font-bold text-xs border border-gray-600">
+                        VS
+                    </div>
 
-        <label>Runs:</label>
-        <select name="runs">
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="6">6</option>
-        </select>
-        <br><br>
+                    <div class="w-1/2 text-left">
+                        <h2 class="text-xl md:text-2xl font-bold text-white leading-tight truncate">{{ match.team2.name }}</h2>
+                        <p class="text-xs text-red-400 font-semibold uppercase tracking-wider">Away</p>
+                    </div>
+                </div>
+            </div>
 
-        <label>Extra:</label>
-        <select name="extra">
-            <option value="">None</option>
-            <option value="wide">Wide</option>
-            <option value="no_ball">No Ball</option>
-            <option value="bye">Bye</option>
-            <option value="leg_bye">Leg Bye</option>
-        </select>
-        <br><br>
+            <!-- Over/Ball Stats -->
+            <div class="grid grid-cols-2 divide-x divide-gray-700 bg-black/20">
+                <div class="p-4 text-center">
+                    <span class="block text-xs text-gray-400 uppercase tracking-widest mb-1">Current Over</span>
+                    <div class="text-3xl font-mono font-bold text-yellow-400 flex items-baseline justify-center gap-1">
+                        {{ next_over }} <span class="text-sm text-gray-500 font-sans">/ {{ match.overs }}</span>
+                    </div>
+                </div>
+                <div class="p-4 text-center">
+                    <span class="block text-xs text-gray-400 uppercase tracking-widest mb-1">Ball Number</span>
+                    <div class="text-3xl font-mono font-bold text-blue-400 flex items-baseline justify-center gap-1">
+                        {{ next_ball }} <span class="text-sm text-gray-500 font-sans">/ 6</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Bar (Visualizing 6 balls) -->
+            <div class="h-1.5 w-full bg-gray-700 flex">
+                {% comment %} 
+                This is a visual representation logic. 
+                Ideally you'd loop 6 times, but since we only have 'next_ball', 
+                we can use inline styles or classes if we had a loop. 
+                For now, just a static bar background.
+                {% endcomment %}
+                <div class="h-full bg-blue-500" style="width: calc(({{ next_ball }} - 1) / 6 * 100%)"></div>
+            </div>
+        </div>
 
-        <label>Wicket?</label>
-        <input type="checkbox" name="is_wicket">
-        <br><br>
+        <!-- Scoring Form -->
+        <form method="post" class="bg-white text-gray-800 rounded-xl shadow-2xl p-6 md:p-8 space-y-6">
+            {% csrf_token %}
+            
+            <h3 class="text-lg font-bold text-gray-700 border-b pb-2 mb-4 flex items-center gap-2">
+                <i class="fas fa-pen-fancy text-blue-600"></i> Record Delivery
+            </h3>
 
-        <button type="submit">Submit Ball</button>
-    </form>
+            <!-- Grid for Runs and Extras -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Runs Input -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 mb-2 uppercase tracking-wide">Runs Scored</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-running text-gray-400"></i>
+                        </div>
+                        <select name="runs" class="block w-full pl-10 bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 p-4 appearance-none cursor-pointer font-bold shadow-sm hover:bg-gray-100 transition-colors">
+                            <option value="0">0 (Dot Ball)</option>
+                            <option value="1">1 Run</option>
+                            <option value="2">2 Runs</option>
+                            <option value="3">3 Runs</option>
+                            <option value="4" class="font-bold text-blue-700">4 (Boundary)</option>
+                            <option value="6" class="font-bold text-purple-700">6 (Six)</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
 
-    <br>
-    <a href="{% url 'umpire_dashboard' %}">Back to Dashboard</a>
+                <!-- Extras Input -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 mb-2 uppercase tracking-wide">Extras</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-plus-circle text-gray-400"></i>
+                        </div>
+                        <select name="extra" class="block w-full pl-10 bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 p-4 appearance-none cursor-pointer shadow-sm hover:bg-gray-100 transition-colors">
+                            <option value="">None</option>
+                            <option value="wide">Wide</option>
+                            <option value="no_ball">No Ball</option>
+                            <option value="bye">Bye</option>
+                            <option value="leg_bye">Leg Bye</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wicket Toggle -->
+            <div class="pt-2">
+                <label class="block relative cursor-pointer group">
+                    <input type="checkbox" name="is_wicket" class="sr-only wicket-checkbox">
+                    <div class="w-full bg-gray-100 border-2 border-gray-200 rounded-xl p-4 flex items-center justify-between transition-all duration-200 hover:border-red-300 group-hover:bg-red-50">
+                        <div class="flex items-center gap-3">
+                            <div class="wicket-icon w-10 h-10 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center transition-colors">
+                                <i class="fas fa-skull-crossbones text-lg"></i>
+                            </div>
+                            <div>
+                                <span class="block font-bold text-lg">Wicket?</span>
+                                <span class="text-xs text-opacity-75">Toggle if batsman is out</span>
+                            </div>
+                        </div>
+                        <div class="h-6 w-6 border-2 border-gray-400 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-white opacity-0 transform scale-50 transition-all duration-200 check-icon"></i>
+                        </div>
+                    </div>
+                    <!-- CSS to show checkmark when checked -->
+                    <style>
+                        .wicket-checkbox:checked + div .check-icon { opacity: 1; transform: scale(100%); }
+                        .wicket-checkbox:checked + div .h-6 { border-color: white; background-color: rgba(255,255,255,0.3); }
+                    </style>
+                </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-xl py-5 rounded-xl shadow-lg transform transition active:scale-95 duration-150 flex items-center justify-center gap-3">
+                <span>Update Scoreboard</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+
+        </form>
+
+        <!-- Back Link -->
+        <div class="mt-8 text-center">
+            <a href="{% url 'umpire_dashboard' %}" class="inline-flex items-center text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+        </div>
+
+    </main>
+
 </body>
 </html>
