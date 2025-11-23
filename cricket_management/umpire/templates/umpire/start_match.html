@@ -162,11 +162,24 @@
                                             </div>
                                             
                                             <!-- Meta Info -->
-                                            <div class="flex items-center justify-center sm:justify-start gap-4 text-sm text-gray-500">
+                                            <div class="flex items-center justify-center sm:justify-start gap-4 text-sm text-gray-500 flex-wrap">
                                                 <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100 font-medium text-xs">
-                                                    <i class="fas fa-circle-notch mr-1 text-[10px]"></i>{{ match.overs }} Overs
+                                                    {{ match.overs }} Overs
                                                 </span>
-                                                <span class="text-xs">ID: #{{ match.id }}</span>
+
+                                                <span class="bg-green-50 text-green-700 px-2 py-0.5 rounded border border-green-100 font-medium text-xs">
+                                                    {{ match.team1.name }}: {{ match.team1_score }}
+                                                </span>
+
+                                                <span class="bg-red-50 text-red-700 px-2 py-0.5 rounded border border-red-100 font-medium text-xs">
+                                                    {{ match.team2.name }}: {{ match.team2_score }}
+                                                </span>
+
+                                                {% if match.is_completed %}
+                                                    <span class="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs font-bold">
+                                                        COMPLETED
+                                                    </span>
+                                                {% endif %}
                                             </div>
                                         </div>
 
