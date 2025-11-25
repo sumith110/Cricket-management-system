@@ -1,12 +1,103 @@
-<h2>Login</h2>
-<form method="post">
-    {% csrf_token %}
-    <input type="text" name="username" placeholder="Username"><br>
-    <input type="password" name="password" placeholder="Password"><br>
-    <button type="submit">Login</button>
-    <p>
-        Don't have an account? 
-        <a href="{% url 'player_signup' %}">Sign up as Player</a>
-    </p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .bg-cricket {
+            background-image: linear-gradient(rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.9)), url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="bg-cricket min-h-screen flex items-center justify-center p-4">
 
-</form>
+    <!-- Login Card - Increased width to max-w-md -->
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform transition-all hover:scale-[1.01] duration-300 border border-gray-200/50">
+        
+        <!-- Header Section -->
+        <div class="bg-gradient-to-br from-blue-900 to-blue-800 p-8 text-center relative overflow-hidden">
+            <!-- Decorative elements -->
+            <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-bl-full"></div>
+            <div class="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-tr-full"></div>
+            
+            <div class="relative z-10">
+                <!-- Icon -->
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full text-blue-900 mb-4 shadow-lg ring-4 ring-blue-800/50">
+                    <i class="fas fa-sign-in-alt text-2xl"></i>
+                </div>
+                <!-- Title -->
+                <h2 class="text-3xl font-bold text-white tracking-tight">Login</h2>
+                <p class="text-blue-200 text-sm mt-2">Access your account</p>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="p-8 pt-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Error Message Display -->
+                {% if error %}
+                    <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm text-center animate-pulse">
+                        <i class="fas fa-exclamation-circle mr-1"></i> {{ error }}
+                    </div>
+                {% endif %}
+
+                <!-- Username Input -->
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Username</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-gray-400 group-focus-within:text-blue-500 transition-colors"></i>
+                        </div>
+                        <input type="text" name="username" placeholder="Enter username" required 
+                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white">
+                    </div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Password</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400 group-focus-within:text-blue-500 transition-colors"></i>
+                        </div>
+                        <input type="password" name="password" placeholder="Enter password" required 
+                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" 
+                    class="w-full bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-black text-white font-bold py-3.5 px-4 rounded-lg shadow-lg transform transition hover:-translate-y-0.5 duration-200 flex items-center justify-center gap-2 mt-6 group text-base">
+                    <span>Login</span>
+                    <i class="fas fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
+                </button>
+
+                <!-- Sign Up Link -->
+                <div class="text-center pt-2">
+                    <p class="text-sm text-gray-600">
+                        Don't have an account? 
+                        <a href="{% url 'player_signup' %}" class="text-blue-600 font-bold hover:text-blue-800 hover:underline transition-colors ml-1">
+                            Sign up as Player
+                        </a>
+                    </p>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

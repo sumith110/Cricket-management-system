@@ -1,51 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Player Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            padding: 30px;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        h2 {
-            margin-bottom: 20px;
-        }
-        .btn {
-            display: block;
-            text-decoration: none;
-            background: #1e90ff;
-            color: white;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .btn:hover {
-            background: #0d74d1;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .bg-cricket {
+            background-image: linear-gradient(rgba(17, 24, 39, 0.9), rgba(17, 24, 39, 0.8)), url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
     </style>
 </head>
-<body>
+<body class="bg-cricket min-h-screen flex flex-col">
 
-<div class="container">
-    <h2>Welcome, {{ request.user.username }}</h2>
+    <!-- Navbar -->
+    <nav class="bg-gray-900/50 backdrop-blur-md border-b border-white/10 sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2 rounded-lg shadow-lg">
+                    <i class="fas fa-user-circle text-xl"></i>
+                </div>
+                <span class="font-bold text-xl tracking-wide text-white">Player Zone</span>
+            </div>
+            <!-- Mobile logout icon -->
+            <a href="\" class="md:hidden text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-sign-out-alt text-2xl"></i>
+            </a>
+        </div>
+    </nav>
 
-    <a href="{% url 'player_profile' %}" class="btn">View Profile</a>
-    <a href="{% url 'player_matches' %}" class="btn">View Matches</a>
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center p-6">
+        
+        <!-- Increased container width from max-w-2xl to max-w-5xl -->
+        <div class="w-full max-w-5xl">
+            
+            <!-- Welcome Header -->
+            <div class="text-center mb-12">
+                <div class="inline-block p-1.5 rounded-full bg-gradient-to-tr from-blue-500 to-green-400 mb-6">
+                    <div class="bg-gray-900 rounded-full p-4 h-28 w-28 flex items-center justify-center mx-auto">
+                        <span class="text-4xl font-bold text-white uppercase">{{ request.user.username|slice:":1" }}</span>
+                    </div>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-3">
+                    Hello, {{ request.user.username }}
+                </h2>
+                <p class="text-blue-200 text-lg">Welcome to your player dashboard</p>
+            </div>
 
-    <hr>
-    <a href="\" class="btn" style="background:#dc3545;">Logout</a>
-</div>
+            <!-- Dashboard Grid - Increased gap -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                
+                <!-- View Profile Card - Increased padding and sizes -->
+                <a href="{% url 'player_profile' %}" class="group bg-white rounded-3xl p-10 shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-gray-200/50 flex flex-col items-center text-center relative overflow-hidden min-h-[320px] justify-center">
+                    <div class="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10">
+                        <!-- Bigger Icon Circle -->
+                        <div class="bg-blue-100 text-blue-600 w-24 h-24 rounded-full flex items-center justify-center text-4xl mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-inner">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold text-gray-800 mb-3">My Profile</h3>
+                        <p class="text-lg text-gray-500 max-w-xs mx-auto">View and edit your stats and personal details</p>
+                    </div>
+                    <div class="mt-8 text-blue-600 font-bold text-lg flex items-center gap-2 group-hover:gap-3 transition-all uppercase tracking-wide">
+                        Go to Profile <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <!-- View Matches Card - Increased padding and sizes -->
+                <a href="{% url 'player_matches' %}" class="group bg-white rounded-3xl p-10 shadow-2xl hover:shadow-green-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-gray-200/50 flex flex-col items-center text-center relative overflow-hidden min-h-[320px] justify-center">
+                    <div class="absolute inset-0 bg-green-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10">
+                        <!-- Bigger Icon Circle -->
+                        <div class="bg-green-100 text-green-600 w-24 h-24 rounded-full flex items-center justify-center text-4xl mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-inner">
+                            <i class="fas fa-list-ul"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold text-gray-800 mb-3">My Matches</h3>
+                        <p class="text-lg text-gray-500 max-w-xs mx-auto">Check your match history and upcoming games</p>
+                    </div>
+                    <div class="mt-8 text-green-600 font-bold text-lg flex items-center gap-2 group-hover:gap-3 transition-all uppercase tracking-wide">
+                        View Matches <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+            </div>
+
+            <!-- Logout Button -->
+            <div class="text-center">
+                <a href="\" class="inline-flex items-center justify-center gap-3 px-10 py-4 bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white font-bold text-lg rounded-2xl border border-red-500/30 hover:border-red-600 transition-all duration-300 backdrop-blur-sm group shadow-lg hover:shadow-red-900/50">
+                    <i class="fas fa-sign-out-alt group-hover:-translate-x-1 transition-transform"></i>
+                    Logout
+                </a>
+            </div>
+
+        </div>
+    </main>
 
 </body>
 </html>
