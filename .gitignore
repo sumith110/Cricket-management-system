@@ -1,0 +1,50 @@
+# Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+__pycache__/
+db.sqlite3
+
+# Virtual Environment
+env/
+venv/
+ENV/
+.venv/
+
+# Django migrations
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# Static & Media files
+/staticfiles/
+/media/
+
+# Environment variables
+.env
+.env.*
+
+# IDE / Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Test / Coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+.coverage
+pytest_cache/
+
+# Node / Frontend tools
+node_modules/
+package-lock.json
+yarn.lock
